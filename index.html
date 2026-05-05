@@ -516,8 +516,10 @@
                 return count + (ans === questions[idx].correct ? 1 : 0);
             }, 0);
             
-            document.getElementById('quizContainer').style.display = 'none';
-            document.getElementById('progress-bar')?.style.display = 'none';
+            const qContainer = document.getElementById('quizContainer');
+            if (qContainer) qContainer.style.display = 'none';
+            const pBar = document.getElementById('progress-bar');
+            if (pBar) pBar.style.display = 'none';
             document.getElementById('scoreSection').classList.add('show');
             document.getElementById('scoreNumber').textContent = `${correct}/${questions.length}`;
             document.getElementById('scoreText').textContent = `${correct} من ${questions.length} صحيحة (${Math.round(correct/questions.length*100)}%)`;
