@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار MCQ — مادة الحاسب</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #fff;
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+        
+        .header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+        
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            background: #14141e;
+            border-radius: 12px;
+            border: 1px solid #1e1e2e;
+        }
+        
+        .progress-track {
+            flex: 1;
+            height: 8px;
+            background: #1e1e2e;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7);
+            border-radius: 4px;
+            transition: width 0.3s;
+            width: 0%;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: #6b6b80;
+            white-space: nowrap;
+        }
+        
+        .question-card {
+            background: #14141e;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #1e1e2e;
+            display: none;
+        }
+        
+        .question-card.active {
+            display: block;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background: #0ea5e9;
+            color: #fff;
+            padding: 2px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #0e0e18;
+            border: 2px solid #1e1e30;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #0ea5e944;
+            background: #111122;
+        }
+        
+        .option.selected {
+            border-color: #0ea5e9;
+            background: #0ea5e911;
+        }
+        
+        .option.correct {
+            border-color: #059669;
+            background: #0596691a;
+        }
+        
+        .option.wrong {
+            border-color: #dc2626;
+            background: #dc26261a;
+        }
+        
+        .option.show-correct {
+            border-color: #059669;
+            background: #0596691a;
+        }
+        
+        .option input[type="radio"] {
+            display: none;
+        }
+        
+        .option .letter {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            background: #1a1a2e;
+            color: #6b6b80;
+            flex-shrink: 0;
+            transition: 0.3s;
+        }
+        
+        .option.selected .letter {
+            background: #0ea5e9;
+            color: #fff;
+        }
+        
+        .option.correct .letter {
+            background: #059669;
+            color: #fff;
+        }
+        
+        .option.wrong .letter {
+            background: #dc2626;
+            color: #fff;
+        }
+        
+        .option.show-correct .letter {
+            background: #059669;
+            color: #fff;
+        }
+        
+        .option .text {
+            flex: 1;
+            font-size: 1rem;
+        }
+        
+        .result-badge {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .result-badge.show {
+            display: block;
+        }
+        
+        .result-badge.correct {
+            background: #0596691a;
+            color: #059669;
+            border: 1px solid #05966944;
+        }
+        
+        .result-badge.wrong {
+            background: #dc26261a;
+            color: #dc2626;
+            border: 1px solid #dc262644;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .nav-btn.prev {
+            background: #1e1e2e;
+            color: #6b6b80;
+        }
+        
+        .nav-btn.prev:hover {
+            background: #2a2a3e;
+            color: #fff;
+        }
+        
+        .nav-btn.next {
+            background: #0ea5e9;
+            color: #fff;
+        }
+        
+        .nav-btn.next:hover {
+            background: #0284c7;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .score-section {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .score-section.show {
+            display: block;
+        }
+        
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        
+        .score-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+        }
+        
+        .score-text {
+            font-size: 1.2rem;
+            color: #6b6b80;
+        }
+        
+        .restart-btn {
+            margin-top: 20px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            background: #0ea5e9;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .restart-btn:hover {
+            background: #0284c7;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #4a4a5a;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.4rem; }
+            .question-text { font-size: 1rem; }
+            .nav-btn { font-size: 0.85rem; padding: 10px 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 اختبار MCQ</h1>
+            <p>مادة الحاسب — اختر الإجابة الصحيحة</p>
+        </div>
+        
+        <div class="progress-bar">
+            <span class="progress-text" id="progressText">0 / 35</span>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div id="quizContainer"></div>
+        
+        <div class="score-section" id="scoreSection">
+            <h2 style="color:#fff;font-size:1.5rem;">🎉 النتيجة</h2>
+            <div class="score-circle">
+                <span class="score-number" id="scoreNumber">0</span>
+            </div>
+            <p class="score-text" id="scoreText">من 35</p>
+            <button class="restart-btn" onclick="restartQuiz()">إعادة الاختبار</button>
+        </div>
+        
+        <div class="footer">
+            <p>تم بواسطة صلوح 👾</p>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {q:"Copy data from one application and place it in another", a:"Spreadsheet", b:"Link", c:"Copy", d:"Embed", correct:"c"},
+            {q:"A global network of networks (tangible).", a:"computer", b:"Information technology", c:"IT", d:"Internet", correct:"d"},
+            {q:"Encompasses information that can be viewed through a web browser (web pages).", a:"WWW", b:"pointing stick", c:"gamepad", d:"Touchpad", correct:"a"},
+            {q:"Copy data from one application and place it in another", a:"Spreadsheet", b:"Link", c:"Copy", d:"Embed", correct:"c"},
+            {q:"A encompasses the whole wired and wireless world of communications.", a:"RAM", b:"Storage", c:"Cyberspace", d:"Topology", correct:"c"},
+            {q:"is a set of technologies including hardware, software and media that can be used to connect computers together.", a:"network", b:"pointing stick", c:"gamepad", d:"Device drivers", correct:"a"},
+            {q:"The network connecting the ATM of a bank located in various cities is example for Local Area Network.", a:"True", b:"False", correct:"b"},
+            {q:"What is computer ethics mainly concerned with?", a:"Hardware design", b:"Moral issues related to computer use", c:"Programming languages", d:"Network speed", correct:"b"},
+            {q:"Which of the following is an example of unethical behavior?", a:"Using licensed software", b:"Accessing public data", c:"Hacking into someone's account", d:"Backing up files", correct:"c"},
+            {q:"What does privacy mean in computing?", a:"Sharing all information publicly", b:"Protecting personal information from unauthorized access", c:"Encrypting only emails", d:"Deleting data regularly", correct:"b"},
+            {q:"Which law protects software from illegal copying?", a:"Privacy Law", b:"Copyright Law", c:"Security Law", d:"Access Law", correct:"b"},
+            {q:"Plagiarism in computing refers to:", a:"Writing original code", b:"Copying someone else's work without credit", c:"Debugging programs", d:"Sharing open-source code", correct:"b"},
+            {q:"Which of the following is considered intellectual property?", a:"Computer hardware", b:"Software programs", c:"Internet cables", d:"Keyboard", correct:"b"},
+            {q:"What is cybercrime?", a:"Using computers legally", b:"Crimes committed using computers or the internet", c:"Writing programs", d:"Playing games online", correct:"b"},
+            {q:"Which of the following is an example of cybercrime?", a:"Emailing a friend", b:"Online shopping", c:"Identity theft", d:"Watching videos", correct:"c"},
+            {q:"Which principle ensures fairness in access to technology?", a:"Privacy", b:"Accuracy", c:"Accessibility", d:"Security", correct:"c"},
+            {q:"Unauthorized access to a system is called:", a:"Browsing", b:"Hacking", c:"Networking", d:"Coding", correct:"b"},
+            {q:"What is the main goal of cybersecurity?", a:"Increase internet speed", b:"Protect systems and data", c:"Develop software", d:"Improve hardware", correct:"b"},
+            {q:"Which of the following is ethical?", a:"Sharing passwords", b:"Copying paid software", c:"Giving proper credit to sources", d:"Spreading viruses", correct:"c"},
+            {q:"What is software piracy?", a:"Developing software", b:"Illegal copying or distribution of software", c:"Buying software", d:"Updating software", correct:"b"},
+            {q:"Which concept refers to correctness of information?", a:"Privacy", b:"Accuracy", c:"Security", d:"Accessibility", correct:"b"},
+            {q:"What is Graphic Design?", a:"Writing computer programs", b:"Creating visual content to communicate messages", c:"Managing databases", d:"Building hardware", correct:"b"},
+            {q:"Graphic design mainly combines:", a:"Sound and music", b:"Text and visuals", c:"Code and data", d:"Numbers and formulas", correct:"b"},
+            {q:"Which field is closely related to graphic design?", a:"Medicine", b:"Engineering", c:"Communication", d:"Accounting", correct:"c"},
+            {q:"The main goal of graphic design is to:", a:"Entertain only", b:"Solve visual communication problems", c:"Write code", d:"Store data", correct:"b"},
+            {q:"Which of the following is a basic element of design?", a:"Algorithm", b:"Color", c:"Compiler", d:"Database", correct:"b"},
+            {q:"Typography refers to:", a:"Image editing", b:"Arrangement of text", c:"Video editing", d:"Drawing shapes", correct:"b"},
+            {q:"Which file format is commonly used for images?", a:".exe", b:".jpg", c:".cpp", d:".html", correct:"b"},
+            {q:"Resolution in design refers to:", a:"Speed of computer", b:"Image clarity and detail", c:"File size", d:"Internet speed", correct:"b"},
+            {q:"The first step in the design process is:", a:"Finalizing design", b:"Understanding the problem", c:"Printing", d:"Publishing", correct:"b"},
+            {q:"Brainstorming is part of:", a:"Coding", b:"Idea generation", c:"Printing", d:"Testing hardware", correct:"b"},
+            {q:"Feedback in design helps to:", a:"Delay work", b:"Improve the design", c:"Delete ideas", d:"Reduce quality", correct:"b"},
+            {q:"Alignment means:", a:"Random placement", b:"Organizing elements in a line", c:"Using colors", d:"Drawing shapes", correct:"b"},
+            {q:"A good design should be:", a:"Complex", b:"Clear and simple", c:"Confusing", d:"Overloaded", correct:"b"},
+            {q:"Which tool is commonly used in graphic design?", a:"Microsoft Excel", b:"Adobe Photoshop", c:"Visual Studio", d:"MySQL", correct:"b"}
+        ];
+        
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+        
+        const letters = ['a', 'b', 'c', 'd'];
+        
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'question-card' + (idx === 0 ? ' active' : '');
+                card.id = `question-${idx}`;
+                
+                let optionsHTML = '';
+                const options = [
+                    {letter: 'a', text: q.a},
+                    {letter: 'b', text: q.b},
+                ];
+                if (q.c) options.push({letter: 'c', text: q.c});
+                if (q.d) options.push({letter: 'd', text: q.d});
+                
+                options.forEach(opt => {
+                    optionsHTML += `
+                        <div class="option" data-letter="${opt.letter}" data-question="${idx}" onclick="selectOption(${idx}, '${opt.letter}')">
+                            <input type="radio" name="q${idx}" value="${opt.letter}" id="q${idx}_${opt.letter}">
+                            <span class="letter">${opt.letter.toUpperCase()}</span>
+                            <span class="text">${opt.text}</span>
+                        </div>
+                    `;
+                });
+                
+                card.innerHTML = `
+                    <div class="question-number">السؤال ${idx + 1}</div>
+                    <div class="question-text">${q.q}</div>
+                    <div class="options">${optionsHTML}</div>
+                    <div class="result-badge" id="result-${idx}"></div>
+                    <div class="nav-buttons">
+                        <button class="nav-btn prev" onclick="prevQuestion()" ${idx === 0 ? 'disabled' : ''}>← السابق</button>
+                        <button class="nav-btn next" onclick="nextQuestion()">${idx === questions.length - 1 ? 'عرض النتيجة 🎯' : 'التالي →'}</button>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+        
+        function selectOption(qIdx, letter) {
+            if (answers[qIdx] !== null) return; // Already answered
+            
+            const card = document.getElementById(`question-${qIdx}`);
+            const options = card.querySelectorAll('.option');
+            const question = questions[qIdx];
+            
+            // Mark selected
+            options.forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.letter === letter) {
+                    opt.classList.add('selected');
+                }
+            });
+            
+            // Store answer
+            answers[qIdx] = letter;
+            
+            // Show result after 0.5s
+            setTimeout(() => {
+                const isCorrect = letter === question.correct;
+                
+                options.forEach(opt => {
+                    opt.classList.remove('selected');
+                    if (opt.dataset.letter === question.correct) {
+                        opt.classList.add('show-correct');
+                    }
+                    if (opt.dataset.letter === letter && !isCorrect) {
+                        opt.classList.add('wrong');
+                    }
+                });
+                
+                const resultBadge = document.getElementById(`result-${qIdx}`);
+                resultBadge.className = 'result-badge show ' + (isCorrect ? 'correct' : 'wrong');
+                resultBadge.textContent = isCorrect ? '✅ إجابة صحيحة!' : `❌ خطأ! الإجابة الصحيحة: ${question.correct.toUpperCase()}`;
+                
+                updateProgress();
+            }, 500);
+        }
+        
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+                currentQuestion++;
+                document.getElementById(`question-${currentQuestion}`).classList.add('active');
+                updateProgress();
+                document.querySelector('.container').scrollTop = 0;
+                window.scrollTo(0, 0);
+            } else {
+                showScore();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+                currentQuestion--;
+                document.getElementById(`question-${currentQuestion}`).classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+            }
+        }
+        
+        function updateProgress() {
+            const answered = answers.filter(a => a !== null).length;
+            document.getElementById('progressText').textContent = `${answered} / ${questions.length}`;
+            document.getElementById('progressFill').style.width = `${(answered / questions.length) * 100}%`;
+        }
+        
+        function showScore() {
+            const answered = answers.filter(a => a !== null).length;
+            const correct = answers.reduce((count, ans, idx) => {
+                return count + (ans === questions[idx].correct ? 1 : 0);
+            }, 0);
+            
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('progress-bar')?.style.display = 'none';
+            document.getElementById('scoreSection').classList.add('show');
+            document.getElementById('scoreNumber').textContent = `${correct}/${questions.length}`;
+            document.getElementById('scoreText').textContent = `${correct} من ${questions.length} صحيحة (${Math.round(correct/questions.length*100)}%)`;
+        }
+        
+        function restartQuiz() {
+            answers = new Array(questions.length).fill(null);
+            currentQuestion = 0;
+            
+            document.getElementById('quizContainer').style.display = 'block';
+            document.getElementById('scoreSection').classList.remove('show');
+            
+            document.querySelectorAll('.question-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('question-0').classList.add('active');
+            
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'wrong', 'show-correct');
+            });
+            
+            document.querySelectorAll('.result-badge').forEach(b => {
+                b.className = 'result-badge';
+                b.textContent = '';
+            });
+            
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+        
+        renderQuiz();
+        updateProgress();
+    </script>
+</body>
+</html>
